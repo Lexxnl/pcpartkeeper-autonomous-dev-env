@@ -1,0 +1,1066 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/**
+ * PCPartKeeper - Unified Theme System
+ * 
+ * This file contains the base styling and component classes using semantic design tokens.
+ * All colors are defined in tailwind.config.js and referenced here for consistency.
+ * The system is designed to be scalable for future light/dark mode support.
+ * 
+ * Includes CSS variables for easy theme switching in the future.
+ */
+
+/* =================================================================
+   CSS Variables - For Future Theme Switching
+   ================================================================= */
+
+:root {
+  /* Surface colors */
+  --color-surface-page: #010409;
+  --color-surface-primary: #0d1117;
+  --color-surface-secondary: #161b22;
+  --color-surface-tertiary: #212830;
+  --color-surface-hover: #262c36;
+  --color-surface-active: #2a313c;
+
+  /* Border colors */
+  --color-border-default: #3d444d;
+  --color-border-subtle: #21262d;
+  --color-border-muted: #30363d;
+  --color-border-emphasis: #6e7681;
+
+  /* Text colors */
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #e6edf3;
+  --color-text-muted: #9198a1;
+  --color-text-placeholder: #6e7681;
+  --color-text-disabled: #484f58;
+  --color-text-inverse: #0d1117;
+
+  /* Action colors */
+  --color-action-primary: #238636;
+  --color-action-primary-hover: #29903b;
+  --color-action-primary-active: #2e9a40;
+  --color-action-danger: #da3633;
+  --color-action-danger-hover: #e5534b;
+  --color-action-danger-muted: #b62324;
+
+  /* Accent colors */
+  --color-accent-primary: #3b82f6;
+  --color-accent-primary-emphasis: #2563eb;
+  --color-accent-secondary: #f59e0b;
+  --color-accent-tertiary: #8b5cf6;
+}
+
+/* Future light theme (commented out, ready for implementation)
+[data-theme="light"] {
+  --color-surface-page: #ffffff;
+  --color-surface-primary: #f6f8fa;
+  --color-text-primary: #1f2328;
+  --color-text-secondary: #656d76;
+}
+*/
+
+/* =================================================================
+   Base Layer - Global Resets & Base Styles
+   ================================================================= */
+
+@layer base {
+  /* Set the default body background and text color */
+  body {
+    @apply bg-surface-page text-text-secondary font-sans antialiased;
+  }
+
+  /* Improved focus states for accessibility */
+  *:focus {
+    @apply outline-none;
+  }
+
+  *:focus-visible {
+    @apply outline-2 outline-accent-primary outline-offset-2 ring-2 ring-accent-primary ring-opacity-50;
+  }
+
+  /* Smooth scrolling for better UX */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Better default box-sizing */
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+}
+
+/* =================================================================
+   Components Layer - Reusable Component Classes
+   ================================================================= */
+
+@layer components {
+  /* -------------------------
+     Button Component Variants
+     ------------------------- */
+
+  /* Primary Button - Used for main actions (e.g., submit, save, create) */
+  .btn-primary {
+    @apply bg-action-primary text-text-primary border border-transparent;
+  }
+
+  .btn-primary:hover:not(:disabled) {
+    @apply bg-action-primary-hover;
+  }
+
+  .btn-primary:active:not(:disabled) {
+    @apply bg-action-primary-active;
+  }
+
+  .btn-primary:focus-visible {
+    @apply outline-action-primary;
+  }
+
+  .btn-primary svg {
+    @apply text-text-primary;
+  }
+
+  /* Default Button - Used for secondary actions */
+  .btn-default {
+    @apply bg-surface-tertiary text-text-primary border border-border-default;
+  }
+
+  .btn-default:hover:not(:disabled) {
+    @apply bg-surface-hover border-border-emphasis;
+  }
+
+  .btn-default:active:not(:disabled) {
+    @apply bg-surface-active;
+  }
+
+  .btn-default:focus-visible {
+    @apply outline-accent-primary;
+  }
+
+  .btn-default svg {
+    @apply text-text-muted;
+  }
+
+  /* Invisible Button - Used for subtle actions (e.g., icon buttons) */
+  .btn-invisible {
+    @apply bg-transparent text-text-primary border border-transparent;
+  }
+
+  .btn-invisible:hover:not(:disabled) {
+    @apply bg-surface-hover;
+  }
+
+  .btn-invisible:active:not(:disabled) {
+    @apply bg-surface-active;
+  }
+
+  .btn-invisible:focus-visible {
+    @apply outline-accent-primary;
+  }
+
+  .btn-invisible svg {
+    @apply text-text-muted;
+  }
+
+  /* Danger Button - Used for destructive actions (e.g., delete, remove) */
+  .btn-danger {
+    @apply bg-surface-tertiary text-action-danger border border-border-default;
+  }
+
+  .btn-danger:hover:not(:disabled) {
+    @apply bg-action-danger text-text-primary border-action-danger;
+  }
+
+  .btn-danger:active:not(:disabled) {
+    @apply bg-action-danger-hover text-text-primary;
+  }
+
+  .btn-danger:focus-visible {
+    @apply outline-action-danger;
+  }
+
+  .btn-danger svg {
+    @apply text-text-muted;
+  }
+
+  .btn-danger:hover:not(:disabled) svg {
+    @apply text-text-primary;
+  }
+
+  /* -------------------------
+     Table Components
+     ------------------------- */
+
+  .table-header {
+    @apply bg-surface-secondary;
+    border-bottom: 1px solid var(--color-border-default);
+  }
+
+  .table-header-cell {
+    @apply px-6 py-3 text-left text-xs font-medium text-text-muted tracking-wider;
+  }
+
+  .table-row {
+    @apply bg-surface-primary !important;
+    border-bottom: 1px solid var(--color-border-subtle);
+  }
+
+  .table-row:hover {
+    @apply bg-surface-hover !important;
+  }
+
+  .table-cell {
+    @apply px-6 py-4 whitespace-nowrap text-sm text-text-secondary;
+  }
+
+  /* -------------------------
+     Card Components
+     ------------------------- */
+
+  .card {
+    @apply bg-surface-primary border border-border-default rounded-lg shadow-lg;
+  }
+
+  .card-section {
+    @apply bg-surface-secondary border border-border-default rounded-lg shadow-lg p-6;
+  }
+
+  /* -------------------------
+     Input Components
+     ------------------------- */
+
+  .input-base {
+    @apply bg-surface-page text-text-primary placeholder-text-placeholder border border-border-default rounded-md;
+    @apply focus:outline-none focus:ring-1 focus:ring-accent-primary focus:border-accent-primary;
+    @apply transition-colors duration-200;
+  }
+
+  /* -------------------------
+     Badge Components
+     ------------------------- */
+
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+    @apply bg-badge-bg text-badge-text;
+  }
+
+  .badge-emphasis {
+    @apply bg-badge-emphasis-bg text-badge-emphasis-text;
+  }
+
+  /* -------------------------
+     Navigation Components
+     ------------------------- */
+
+  .nav-border {
+    @apply border-b border-border-default;
+  }
+
+  /* -------------------------
+     Empty State Components
+     ------------------------- */
+
+  .empty-state {
+    @apply p-8 text-center;
+  }
+
+  .empty-state-icon {
+    @apply mx-auto h-12 w-12 text-text-muted;
+  }
+
+  .empty-state-title {
+    @apply text-lg font-medium text-text-primary mb-2;
+  }
+
+  .empty-state-description {
+    @apply text-text-muted;
+  }
+
+  /* -------------------------
+     DataTable Components
+     ------------------------- */
+
+  /* DataTable Container */
+  .data-table {
+    @apply bg-surface-primary border border-border-default rounded-lg overflow-hidden;
+  }
+
+  .data-table-container {
+    @apply bg-surface-primary border border-border-default rounded-lg overflow-hidden;
+  }
+
+  .data-table-container-bordered {
+    @apply border-2 border-border-emphasis;
+  }
+
+  .data-table-container-elevated {
+    @apply shadow-xl border-border-subtle;
+  }
+
+  .data-table-container-minimal {
+    @apply border-0 shadow-none;
+  }
+
+  /* DataTable Header */
+  .data-table-header {
+    @apply bg-black;
+    border-bottom: 1px solid var(--color-border-default);
+    padding: 1rem 1.5rem;
+  }
+
+  .data-table-header-minimal {
+    @apply bg-transparent border-0 px-0 py-2;
+  }
+
+  .data-table-header-elevated {
+    @apply bg-surface-tertiary border-b-2 border-border-emphasis;
+  }
+
+  .data-table-title {
+    @apply text-lg font-semibold text-text-primary;
+  }
+
+  .data-table-title-large {
+    @apply text-xl font-bold;
+  }
+
+  .data-table-title-small {
+    @apply text-base font-medium;
+  }
+
+  .data-table-subtitle {
+    @apply text-sm text-text-muted mt-1;
+  }
+
+  .data-table-subtitle-muted {
+    @apply text-text-muted;
+  }
+
+  .data-table-subtitle-subtle {
+    @apply text-text-placeholder;
+  }
+
+  .data-table-actions {
+    @apply flex items-center gap-3 mt-4 sm:mt-0;
+  }
+
+  .data-table-actions-horizontal {
+    @apply flex-row;
+  }
+
+  .data-table-actions-vertical {
+    @apply flex-col;
+  }
+
+  .data-table-actions-start {
+    @apply justify-start;
+  }
+
+  .data-table-actions-center {
+    @apply justify-center;
+  }
+
+  .data-table-actions-end {
+    @apply justify-end;
+  }
+
+  /* DataTable Table */
+  .data-table-table {
+    @apply min-w-full divide-y divide-border-subtle;
+  }
+
+  .data-table-table-bordered {
+    @apply border border-border-default;
+  }
+
+  .data-table-table-striped .data-table-row:nth-child(even) {
+    @apply bg-surface-primary !important;
+  }
+  
+  .data-table-table-striped .data-table-row {
+    @apply bg-surface-primary !important;
+  }
+
+  .data-table-table-minimal {
+    @apply divide-y-0;
+  }
+
+  .data-table-head {
+    @apply bg-surface-secondary !important;
+  }
+
+  .data-table-table .data-table-head {
+    @apply bg-surface-secondary !important;
+  }
+
+  .data-table-mobile .data-table-head {
+    @apply bg-surface-secondary !important;
+  }
+
+  .data-table-head-sticky {
+    @apply sticky top-0 z-10 bg-surface-secondary !important;
+  }
+
+  .data-table-body {
+    @apply bg-surface-primary divide-y divide-border-subtle;
+  }
+
+  .data-table-body-virtual {
+    @apply relative;
+  }
+
+  /* DataTable Rows - Default state using Tailwind tokens */
+  tr.data-table-row,
+  .data-table-row,
+  .data-table-row-hover,
+  .data-table-row-hoverable {
+    @apply bg-surface-primary;
+  }
+  
+  /* DataTable Rows - Hover state using Tailwind surface-hover color */
+  tr.data-table-row:hover,
+  tr.data-table-row-hoverable:hover,
+  .data-table-row:hover,
+  .data-table-row-hover:hover,
+  .data-table-row-hoverable:hover,
+  tbody tr:hover,
+  .data-table-body tr:hover,
+  .data-table-table tbody tr:hover {
+    @apply bg-surface-hover;
+  }
+
+  /* DataTable Rows - Selected state */
+  tr.data-table-row-selected,
+  .data-table-row-selected,
+  .data-table-row.data-table-row-selected {
+    @apply bg-surface-tertiary;
+  }
+
+  /* DataTable Rows - Striped state using Tailwind */
+  .data-table-row-striped {
+    @apply bg-surface-primary;
+  }
+  
+  .data-table-row-striped:nth-child(even) {
+    @apply bg-surface-secondary;
+  }
+
+  .data-table-row-clickable {
+    @apply cursor-pointer;
+  }
+
+  .data-table-row-selectable {
+    @apply cursor-pointer;
+  }
+
+  .data-table-row-disabled {
+    @apply opacity-50 cursor-not-allowed;
+  }
+
+  /* DataTable Cells */
+  .data-table-header-cell {
+    /* Default compact styling for all header cells */
+    @apply px-3 py-2 text-left text-xs font-medium text-text-muted tracking-wider bg-surface-secondary !important;
+  }
+
+  .data-table-header-cell-sortable {
+    @apply cursor-pointer transition-colors duration-150 select-none bg-surface-secondary !important;
+  }
+  
+  .data-table-header-cell-sortable:hover {
+    @apply bg-surface-secondary !important;
+  }
+  
+  thead.data-table-head,
+  thead.data-table-head th,
+  .data-table-table thead th,
+  .data-table thead th,
+  .data-table-mobile thead th {
+    @apply bg-surface-secondary !important;
+  }
+
+  .data-table-header-cell-sorted {
+    @apply text-text-primary;
+  }
+
+  .data-table-header-cell-resizable {
+    @apply relative;
+  }
+
+  .data-table-header-cell-sticky {
+    @apply sticky top-0 z-20;
+  }
+
+  .data-table-header-cell-start {
+    @apply text-left;
+  }
+
+  .data-table-header-cell-center {
+    @apply text-center;
+  }
+
+  .data-table-header-cell-end {
+    @apply text-right;
+  }
+
+  .data-table-cell {
+    /* Default compact styling for all tables */
+    @apply px-3 py-2 whitespace-nowrap text-xs text-text-secondary;
+  }
+
+  .data-table-cell-start {
+    @apply text-left;
+  }
+
+  .data-table-cell-center {
+    @apply text-center;
+  }
+
+  .data-table-cell-end {
+    @apply text-right;
+  }
+
+  .data-table-cell-sticky {
+    @apply sticky z-10;
+  }
+
+  /* Spacious variant for tables that need more breathing room */
+  .data-table-spacious .data-table-cell {
+    @apply px-6 py-4 text-sm;
+  }
+
+  /* Legacy support - backwards compatibility */
+  .data-table-cell-compact {
+    @apply px-3 py-2 text-xs;
+  }
+
+  .data-table-cell-spacious-standalone {
+    @apply px-8 py-6 text-base;
+  }
+
+  /* DataTable Pagination */
+  .data-table-pagination {
+    @apply bg-surface-secondary border-t border-border-default px-6 py-4;
+  }
+
+  .data-table-pagination-minimal {
+    @apply bg-transparent border-0 px-0 py-2;
+  }
+
+  .data-table-pagination-compact {
+    @apply px-4 py-2;
+  }
+
+  .data-table-pagination-start {
+    @apply justify-start;
+  }
+
+  .data-table-pagination-center {
+    @apply justify-center;
+  }
+
+  .data-table-pagination-end {
+    @apply justify-end;
+  }
+
+  .data-table-pagination-between {
+    @apply justify-between;
+  }
+
+  /* DataTable Empty State */
+  .data-table-empty {
+    @apply p-8 text-center;
+  }
+
+  .data-table-empty-minimal {
+    @apply p-4;
+  }
+
+  .data-table-empty-illustrated {
+    @apply p-12;
+  }
+
+  .data-table-empty-icon {
+    @apply mx-auto h-12 w-12 text-text-muted mb-4;
+  }
+
+  .data-table-empty-title {
+    @apply text-lg font-medium text-text-primary mb-2;
+  }
+
+  .data-table-empty-description {
+    @apply text-text-muted mb-4;
+  }
+
+  .data-table-empty-action {
+    @apply mt-4;
+  }
+
+  /* DataTable Loading State - Standardized responsive loading */
+  .data-table-loading {
+    @apply p-6 sm:p-8 lg:p-12 text-center;
+  }
+
+  .data-table-loading-spinner {
+    @apply mx-auto h-6 w-6 sm:h-8 sm:w-8 text-accent-primary animate-spin mb-3 sm:mb-4;
+  }
+
+  .data-table-loading-dots {
+    @apply flex justify-center space-x-1 sm:space-x-2 mb-3 sm:mb-4;
+  }
+
+  .data-table-loading-dot {
+    @apply h-2 w-2 sm:h-3 sm:w-3 bg-accent-primary rounded-full animate-pulse;
+  }
+
+  .data-table-loading-message {
+    @apply text-sm sm:text-base text-text-muted font-medium;
+  }
+
+  /* Standardized loading states across all components */
+  .loading-container {
+    @apply flex flex-col items-center justify-center py-8 sm:py-12 lg:py-16;
+  }
+
+  .loading-spinner {
+    @apply h-6 w-6 sm:h-8 sm:w-8 text-accent-primary animate-spin mb-3 sm:mb-4;
+  }
+
+  .loading-spinner-sm {
+    @apply h-4 w-4 sm:h-5 sm:w-5 text-accent-primary animate-spin mb-2 sm:mb-3;
+  }
+
+  .loading-spinner-lg {
+    @apply h-8 w-8 sm:h-10 sm:w-10 text-accent-primary animate-spin mb-4 sm:mb-6;
+  }
+
+  .loading-message {
+    @apply text-sm sm:text-base text-text-muted font-medium text-center max-w-md;
+  }
+
+  .loading-skeleton {
+    @apply animate-pulse bg-surface-tertiary rounded;
+  }
+
+  .loading-skeleton-text {
+    @apply h-4 bg-surface-tertiary rounded mb-2;
+  }
+
+  .loading-skeleton-button {
+    @apply h-8 sm:h-9 bg-surface-tertiary rounded-lg;
+  }
+
+  .loading-skeleton-card {
+    @apply h-32 sm:h-40 bg-surface-tertiary rounded-lg;
+  }
+
+  /* DataTable Skeleton */
+  .data-table-skeleton {
+    @apply animate-pulse;
+  }
+
+  .data-table-skeleton-row {
+    @apply bg-surface-tertiary rounded h-4 mb-2;
+  }
+
+  .data-table-skeleton-cell {
+    @apply bg-surface-tertiary rounded h-4;
+  }
+
+  .data-table-skeleton-minimal {
+    @apply bg-surface-secondary rounded h-3;
+  }
+
+  /* DataTable Row Actions */
+  .data-table-row-actions {
+    @apply flex items-center gap-2;
+  }
+
+  .data-table-row-actions-dropdown {
+    @apply relative;
+  }
+
+  .data-table-row-actions-inline {
+    @apply flex gap-1;
+  }
+
+  .data-table-row-actions-overflow {
+    @apply flex gap-1;
+  }
+
+  .data-table-row-actions-start {
+    @apply justify-start;
+  }
+
+  .data-table-row-actions-center {
+    @apply justify-center;
+  }
+
+  .data-table-row-actions-end {
+    @apply justify-end;
+  }
+
+  /* DataTable Bulk Actions */
+  .data-table-bulk-actions {
+    @apply flex items-center gap-3 p-4 bg-surface-tertiary border-b border-border-default;
+  }
+
+  .data-table-bulk-actions-dropdown {
+    @apply relative;
+  }
+
+  .data-table-bulk-actions-inline {
+    @apply flex gap-2;
+  }
+
+  .data-table-bulk-actions-floating {
+    @apply fixed bottom-4 right-4 z-50;
+  }
+
+  .data-table-bulk-actions-start {
+    @apply justify-start;
+  }
+
+  .data-table-bulk-actions-center {
+    @apply justify-center;
+  }
+
+  .data-table-bulk-actions-end {
+    @apply justify-end;
+  }
+
+  /* DataTable Sort Indicators */
+  .data-table-sort-indicator {
+    @apply ml-1 text-text-muted;
+  }
+
+  .data-table-sort-indicator-asc {
+    @apply text-accent-primary;
+  }
+
+  .data-table-sort-indicator-desc {
+    @apply text-accent-primary;
+  }
+
+  .data-table-sort-indicator-none {
+    @apply text-text-muted;
+  }
+
+  /* DataTable Selection */
+  .data-table-select-all {
+    @apply cursor-pointer;
+  }
+
+  .data-table-select-row {
+    @apply cursor-pointer;
+  }
+
+  .data-table-select-checkbox {
+    @apply w-4 h-4 text-accent-primary border-border-default rounded focus:ring-accent-primary;
+  }
+
+  /* DataTable Responsive */
+  .data-table-responsive {
+    @apply overflow-x-auto scrollbar-dark;
+  }
+
+  .data-table-responsive-mobile {
+    @apply block sm:table;
+  }
+
+  .data-table-responsive-stack {
+    @apply space-y-2 sm:space-y-0;
+  }
+
+  /* Mobile-first responsive table - Improved accessibility and UX */
+  .data-table-mobile {
+    @apply block sm:table w-full;
+  }
+
+  .data-table-mobile .data-table-table {
+    @apply block sm:table w-full;
+  }
+
+  .data-table-mobile .data-table-head {
+    @apply hidden sm:table-header-group;
+  }
+
+  .data-table-mobile .data-table-body {
+    @apply block sm:table-row-group;
+  }
+
+  .data-table-mobile .data-table-row {
+    @apply block sm:table-row border border-border-default rounded-lg mb-3 p-4 sm:border-0 sm:rounded-none sm:mb-0 sm:p-0 shadow-sm sm:shadow-none;
+  }
+
+  .data-table-mobile .data-table-cell {
+    @apply block sm:table-cell text-xs sm:text-xs py-2 sm:py-2;
+  }
+
+  .data-table-mobile .data-table-cell:before {
+    @apply content-[attr(data-label)] font-medium text-text-muted text-xs uppercase tracking-wide sm:content-none;
+  }
+
+  .data-table-mobile .data-table-cell:not(:last-child) {
+    @apply border-b border-border-subtle pb-3 mb-3 sm:border-b-0 sm:pb-0 sm:mb-0;
+  }
+
+  /* Mobile card layout for better touch interaction */
+  .data-table-mobile-card {
+    @apply bg-surface-primary border border-border-default rounded-lg p-4 mb-3 shadow-sm hover:shadow-md transition-shadow duration-200;
+  }
+
+  .data-table-mobile-card .data-table-cell {
+    @apply flex justify-between items-center py-2 text-xs;
+  }
+
+  .data-table-mobile-card .data-table-cell:before {
+    @apply font-medium text-text-muted mr-3 flex-shrink-0;
+  }
+
+  .data-table-mobile-card .data-table-cell:after {
+    @apply text-text-secondary text-right;
+  }
+
+
+  /* DataTable Virtual Scrolling */
+  .data-table-virtual {
+    @apply relative overflow-auto;
+  }
+
+  .data-table-virtual-content {
+    @apply absolute top-0 left-0 w-full;
+  }
+
+  .data-table-virtual-item {
+    @apply absolute left-0 right-0;
+  }
+
+  /* DataTable Sticky Columns */
+  .data-table-sticky-left {
+    @apply sticky left-0 z-10 bg-surface-primary;
+  }
+
+  .data-table-sticky-right {
+    @apply sticky right-0 z-10 bg-surface-primary;
+  }
+
+  .data-table-sticky-header {
+    @apply sticky top-0 z-20;
+  }
+
+  /* DataTable Spacious Mode - Override default compact styling */
+  .data-table-spacious .data-table-cell {
+    @apply px-6 py-4 text-sm;
+  }
+
+  .data-table-spacious .data-table-header-cell {
+    @apply px-6 py-3 text-sm;
+  }
+}
+
+/* =================================================================
+   Utilities Layer - Custom Utility Classes
+   ================================================================= */
+
+@layer utilities {
+  /* Animation utilities */
+  .transition-smooth {
+    @apply transition-all duration-200 ease-in-out;
+  }
+
+  .transition-fast {
+    @apply transition-all duration-150 ease-in-out;
+  }
+
+  .transition-slow {
+    @apply transition-all duration-300 ease-in-out;
+  }
+
+  /* Text utilities */
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .text-pretty {
+    text-wrap: pretty;
+  }
+
+  /* Scrollbar styling for dark theme */
+  .scrollbar-dark::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  .scrollbar-dark::-webkit-scrollbar-track {
+    @apply bg-surface-secondary;
+  }
+
+  .scrollbar-dark::-webkit-scrollbar-thumb {
+    @apply bg-border-emphasis rounded;
+  }
+
+  .scrollbar-dark::-webkit-scrollbar-thumb:hover {
+    @apply bg-text-muted;
+  }
+
+  /* Thin scrollbar variant */
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    @apply bg-border-muted rounded-full;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    @apply bg-border-emphasis;
+  }
+
+  /* Hidden scrollbar but still scrollable */
+  .scrollbar-none {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Layout utilities */
+  .safe-area-inset-top {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .safe-area-inset-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  /* Gradient utilities using semantic colors */
+  .gradient-surface {
+    background: linear-gradient(
+      180deg,
+      theme('colors.surface.primary') 0%,
+      theme('colors.surface.secondary') 100%
+    );
+  }
+
+  .gradient-accent {
+    background: linear-gradient(
+      135deg,
+      theme('colors.accent.primary') 0%,
+      theme('colors.accent.primary-emphasis') 100%
+    );
+  }
+
+  /* Interactive state utilities */
+  .interactive {
+    @apply transition-smooth cursor-pointer select-none;
+  }
+
+  .interactive:hover {
+    @apply scale-105;
+  }
+
+  .interactive:active {
+    @apply scale-95;
+  }
+
+  /* Truncate with tooltip support */
+  .truncate-2 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  .truncate-3 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+  }
+
+  /* Backdrop blur utilities */
+  .glass-effect {
+    @apply bg-surface-primary bg-opacity-80 backdrop-blur-md border border-border-default;
+  }
+
+  /* Skeleton loading animation */
+  .skeleton {
+    @apply animate-pulse bg-surface-tertiary rounded;
+  }
+
+  /* Focus ring utility matching design system */
+  .focus-ring {
+    @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface-page;
+  }
+
+  /* Responsive container utilities */
+  .container-narrow {
+    max-width: 768px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .container-reading {
+    max-width: 65ch;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* Mobile-first responsive utilities */
+  .mobile-stack {
+    @apply flex flex-col sm:flex-row;
+  }
+
+  .mobile-full {
+    @apply w-full sm:w-auto;
+  }
+
+  .mobile-hidden {
+    @apply hidden sm:block;
+  }
+
+  .mobile-only {
+    @apply block sm:hidden;
+  }
+
+  .touch-target {
+    @apply min-h-[2.5rem] min-w-[2.5rem] sm:min-h-[2rem] sm:min-w-[2rem];
+  }
+
+  .responsive-text {
+    @apply text-sm sm:text-base;
+  }
+
+  .responsive-text-lg {
+    @apply text-base sm:text-lg;
+  }
+
+  .responsive-text-xl {
+    @apply text-lg sm:text-xl;
+  }
+
+  .responsive-padding {
+    @apply px-4 py-3 sm:px-6 sm:py-4;
+  }
+
+  .responsive-gap {
+    @apply gap-3 sm:gap-4;
+  }
+
+  .responsive-gap-lg {
+    @apply gap-4 sm:gap-6;
+  }
+}
