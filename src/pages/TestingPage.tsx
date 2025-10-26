@@ -13,6 +13,8 @@ import UnderlineNavShowcase from '../components/UnderlineNavShowcase';
 import ButtonClickCounter from '../components/ButtonClickCounter';
 import { DataTableColumn, MockItem } from '../components/DataTableShowcase';
 import { logger } from '../utils/logger';
+import ErrorBoundary from '../components/ErrorBoundary';
+import ErrorState from '../components/ErrorState';
 
 // Type definitions
 interface ButtonClicks {
@@ -115,8 +117,9 @@ function TestingPage(): React.ReactElement {
   };
 
   return (
-    <div className='min-h-screen bg-surface-page'>
-      <div className='container mx-auto px-4 py-8'>
+    <ErrorBoundary fallback={<ErrorState />}>
+      <div className='min-h-screen bg-surface-page'>
+        <div className='container mx-auto px-4 py-8'>
         {/* Button Variants Section */}
         <div className='card-section mb-6'>
           <h2 className='text-2xl font-semibold text-text-primary mb-4'>
@@ -221,8 +224,9 @@ function TestingPage(): React.ReactElement {
         <div className='card-section'>
           <ButtonClickCounter buttonClicks={buttonClicks} />
         </div>
+        </div>
       </div>
-    </div>
+    </ErrorBoundary>
   );
 }
 

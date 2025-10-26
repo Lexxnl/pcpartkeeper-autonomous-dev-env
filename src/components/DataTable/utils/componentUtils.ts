@@ -69,7 +69,7 @@ export function buildResponsiveClasses(
  * @param props - Incoming props
  * @returns Merged props object
  */
-export function mergeProps<T extends Record<string, any>>(
+export function mergeProps<T extends Record<string, unknown>>(
   defaultProps: Partial<T>,
   props: T
 ): T {
@@ -122,7 +122,7 @@ export function extractCommonProps(props: BaseComponentProps) {
  * @param deps - Dependencies array
  * @returns Memoized event handler
  */
-export function createEventHandler<T extends (...args: any[]) => void>(
+export function createEventHandler<T extends (...args: unknown[]) => void>(
   handler: T,
   deps: React.DependencyList
 ): T {
@@ -135,7 +135,7 @@ export function createEventHandler<T extends (...args: any[]) => void>(
  * @param handlers - Array of event handlers
  * @returns Combined event handler
  */
-export function combineEventHandlers<T extends (...args: any[]) => void>(
+export function combineEventHandlers<T extends (...args: unknown[]) => void>(
   ...handlers: (T | undefined)[]
 ): T | undefined {
   const validHandlers = handlers.filter(Boolean) as T[];
@@ -211,9 +211,9 @@ export function validateRequiredProps<T extends Record<string, any>>(
  * @param validators - Object of prop validators
  * @throws Error if prop validation fails
  */
-export function validatePropTypes<T extends Record<string, any>>(
+export function validatePropTypes<T extends Record<string, unknown>>(
   props: T,
-  validators: Record<keyof T, (value: any) => boolean>
+  validators: Record<keyof T, (value: unknown) => boolean>
 ): void {
   Object.entries(validators).forEach(([key, validator]) => {
     const value = props[key];

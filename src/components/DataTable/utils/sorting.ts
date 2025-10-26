@@ -77,7 +77,7 @@ function getDefaultSortComparison<T>(
 /**
  * Compares two values as numbers
  */
-function compareNumbers(a: any, b: any): number {
+function compareNumbers(a: unknown, b: unknown): number {
   const numA = Number(a);
   const numB = Number(b);
 
@@ -91,7 +91,7 @@ function compareNumbers(a: any, b: any): number {
 /**
  * Compares two values as dates
  */
-function compareDates(a: any, b: any): number {
+function compareDates(a: unknown, b: unknown): number {
   const dateA = new Date(a);
   const dateB = new Date(b);
 
@@ -105,7 +105,7 @@ function compareDates(a: any, b: any): number {
 /**
  * Compares two values as strings
  */
-function compareStrings(a: any, b: any): number {
+function compareStrings(a: unknown, b: unknown): number {
   const strA = String(a).toLowerCase();
   const strB = String(b).toLowerCase();
 
@@ -115,7 +115,7 @@ function compareStrings(a: any, b: any): number {
 /**
  * Gets nested value from object using dot notation
  */
-function getNestedValue(obj: any, path: string | keyof any): any {
+function getNestedValue(obj: unknown, path: string | keyof unknown): unknown {
   if (typeof path === 'string' && path.includes('.')) {
     return path.split('.').reduce((current, key) => current?.[key], obj);
   }

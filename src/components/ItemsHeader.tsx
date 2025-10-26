@@ -2,6 +2,7 @@ import React from 'react';
 import SearchBar from './SearchBar';
 import AddItemButton from './AddItemButton';
 import Button from './Button';
+import { LoadingSpinner } from './LoadingSpinner';
 
 export interface ItemsHeaderProps {
   searchTerm: string;
@@ -11,6 +12,7 @@ export interface ItemsHeaderProps {
   filteredCount: number;
   selectedCount: number;
   onBulkDelete: () => void;
+  isBulkDeleting?: boolean;
 }
 
 /**
@@ -32,6 +34,7 @@ export const ItemsHeader: React.FC<ItemsHeaderProps> = React.memo(({
   filteredCount,
   selectedCount,
   onBulkDelete,
+  isBulkDeleting = false,
 }) => {
   return (
     <div className='space-y-4 sm:space-y-6' role='search' aria-label='Search and filter inventory items'>
@@ -58,14 +61,25 @@ export const ItemsHeader: React.FC<ItemsHeaderProps> = React.memo(({
             <Button
               variant='danger'
               onClick={onBulkDelete}
+              disabled={isBulkDeleting}
+              loading={isBulkDeleting}
               className='w-full sm:w-auto whitespace-nowrap'
               aria-label={`Delete ${selectedCount} selected item${selectedCount === 1 ? '' : 's'}`}
             >
               <span className='flex items-center gap-2'>
-                <span className='text-sm sm:text-base'>Delete Selected</span>
-                <span className='bg-action-danger-hover text-white px-2 py-0.5 rounded-full text-xs font-medium'>
-                  {selectedCount}
-                </span>
+                {isBulkDeleting ? (
+                  <>
+                    <LoadingSpinner size='small' />
+                    <span className='text-sm sm:text-base'>Deleting...</span>
+                  </>
+                ) : (
+                  <>
+                    <span className='text-sm sm:text-base'>Delete Selected</span>
+                    <span className='bg-action-danger-hover text-white px-2 py-0.5 rounded-full text-xs font-medium'>
+                      {selectedCount}
+                    </span>
+                  </>
+                )}
               </span>
             </Button>
           )}

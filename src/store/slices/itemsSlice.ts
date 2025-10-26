@@ -155,7 +155,7 @@ export const useItemsStore = create<ItemsSlice>()(
             items: [...state.items, newItem],
           }));
         } catch (error) {
-          if (error.name === 'AbortError') {
+          if (error instanceof Error && error.name === 'AbortError') {
             throw error;
           }
           logger.error('Failed to add item:', error);
@@ -173,7 +173,7 @@ export const useItemsStore = create<ItemsSlice>()(
             ),
           }));
         } catch (error) {
-          if (error.name === 'AbortError') {
+          if (error instanceof Error && error.name === 'AbortError') {
             throw error;
           }
           logger.error('Failed to update item:', error);
@@ -189,7 +189,7 @@ export const useItemsStore = create<ItemsSlice>()(
             items: state.items.filter(item => item.id !== id),
           }));
         } catch (error) {
-          if (error.name === 'AbortError') {
+          if (error instanceof Error && error.name === 'AbortError') {
             throw error;
           }
           logger.error('Failed to delete item:', error);
@@ -205,7 +205,7 @@ export const useItemsStore = create<ItemsSlice>()(
             items: state.items.filter(item => !ids.includes(item.id)),
           }));
         } catch (error) {
-          if (error.name === 'AbortError') {
+          if (error instanceof Error && error.name === 'AbortError') {
             throw error;
           }
           logger.error('Failed to delete items:', error);

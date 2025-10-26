@@ -1,16 +1,18 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
+import type { ErrorInfo } from 'react';
 import ErrorBoundary from './components/ErrorBoundary';
 import {
   LazyItemsPageWithSuspense,
   LazyTestingPageWithSuspense,
 } from './components/LazyComponents';
-import { initializeStore, setupStoreSubscriptions } from './store';
+import { setupStoreSubscriptions, useItemsStore } from './store';
 import { useUIStore, useUserStore } from './store';
+import { logger } from './utils/logger';
 import PageHeader from './components/PageHeader';
 import SearchBar from './components/SearchBar';
 import UnderlineNav from './components/UnderlineNav';
 import Avatar from './components/Avatar';
-import { ListIcon, BeakerIcon } from './components/icons';
+import { NAV_ITEMS } from './config/navigation';
 import DataTableTest from './components/DataTableTest';
 
 // Type definitions
@@ -28,13 +30,58 @@ function App({}: AppProps) {
   const currentPage = useUIStore(state => state.currentPage);
   const setCurrentPage = useUIStore(state => state.setCurrentPage);
   const user = useUserStore(state => state.user);
+  const setFilters = useItemsStore(state => state.setFilters);
+  
+  // Local state for search
+  const [searchTerm, setSearchTerm] = useState('');
 
-
-  // Initialize store and subscriptions
+  // Initialize store with mock data if needed
   useEffect(() => {
-    initializeStore();
+    const initializeItems = async () => {
+      try {
+        // Only initialize if no items exist
+        const currentItems = useItemsStore.getState().items;
+        if (currentItems.length === 0) {
+          const { generateMockItems } = await import('./data/mockData');
+          const mockItems = generateMockItems();
+          useItemsStore.getState().setItems(mockItems);
+          logger.log('Store initialized successfully');
+        }
+      } catch (error) {
+        logger.error('Failed to initialize store:', error);
+      }
+    };
+    
+    initializeItems();
+  }, []); // Only run once on mount
+
+  // Setup store subscriptions
+  useEffect(() => {
     const cleanupSubscriptions = setupStoreSubscriptions();
     return cleanupSubscriptions;
+  }, []);
+
+  // Search handlers
+  const handleSearchChange = useCallback((term: string) => {
+    setSearchTerm(term);
+    setFilters({ searchTerm: term });
+  }, []); // setFilters is a stable Zustand action
+
+  const handleSearch = useCallback((term: string) => {
+    setSearchTerm(term);
+    setFilters({ searchTerm: term });
+    logger.log('Search executed:', term);
+  }, []); // setFilters is a stable Zustand action
+
+  // Error handler for ErrorBoundary
+  const handleError = useCallback((error: Error, errorInfo: ErrorInfo) => {
+    // Add error notification to store
+    useUIStore.getState().addNotification({
+      type: 'error',
+      title: 'Application Error',
+      message: 'Something went wrong. Please try refreshing the page.',
+      duration: 10000,
+    });
   }, []);
 
   /**
@@ -53,8 +100,18 @@ function App({}: AppProps) {
   };
 
   return (
-    <ErrorBoundary>
+    <ErrorBoundary onError={handleError}>
       <div className='min-h-screen bg-surface-page'>
+        {/* Skip Links for Accessibility */}
+        <div className="skip-links">
+          <a 
+            href="#main-content" 
+            className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:bg-surface-primary focus:text-text-primary focus:px-4 focus:py-2 focus:rounded focus:ring-2 focus:ring-accent-primary"
+          >
+            Skip to main content
+          </a>
+        </div>
+
         {/* PageHeader with Logo, SearchBar, and Navigation - Fully Responsive */}
         <PageHeader role='banner' aria-label='PC Part Keeper'>
           {/* Top Row: Logo, SearchBar, and Avatar - Responsive Layout */}
@@ -70,9 +127,9 @@ function App({}: AppProps) {
                 {/* SearchBar - Full width on mobile, constrained on larger screens */}
                 <div className='w-full sm:min-w-[20rem] md:min-w-[24rem] lg:w-96'>
                   <SearchBar
-                    searchTerm=''
-                    onSearchChange={() => {}}
-                    onSearch={() => {}}
+                    searchTerm={searchTerm}
+                    onSearchChange={handleSearchChange}
+                    onSearch={handleSearch}
                   />
                 </div>
 
@@ -102,39 +159,26 @@ function App({}: AppProps) {
           {/* Navigation at the bottom of PageHeader - Responsive with proper positioning */}
           <PageHeader.Navigation className='px-4 sm:px-6 lg:px-8 overflow-x-auto scrollbar-thin'>
             <UnderlineNav aria-label='Main navigation'>
-              <UnderlineNav.Item
-                href='#'
-                onClick={() => setCurrentPage('items')}
-                aria-current={currentPage === 'items' ? 'page' : undefined}
-                icon={<ListIcon />}
-              >
-                <span className='hidden xs:inline'>Items Page</span>
-                <span className='xs:hidden'>Items</span>
-              </UnderlineNav.Item>
-              <UnderlineNav.Item
-                href='#'
-                onClick={() => setCurrentPage('testing')}
-                aria-current={currentPage === 'testing' ? 'page' : undefined}
-                icon={<BeakerIcon />}
-              >
-                <span className='hidden xs:inline'>Testing Page</span>
-                <span className='xs:hidden'>Testing</span>
-              </UnderlineNav.Item>
-              <UnderlineNav.Item
-                href='#'
-                onClick={() => setCurrentPage('datatable')}
-                aria-current={currentPage === 'datatable' ? 'page' : undefined}
-                icon={<ListIcon />}
-              >
-                <span className='hidden xs:inline'>DataTable Test</span>
-                <span className='xs:hidden'>DataTable</span>
-              </UnderlineNav.Item>
+              {NAV_ITEMS.map(item => (
+                <UnderlineNav.Item
+                  key={item.id}
+                  href='#'
+                  onClick={() => setCurrentPage(item.page)}
+                  aria-current={currentPage === item.page ? 'page' : undefined}
+                  icon={<item.icon />}
+                >
+                  <span className='hidden sm:inline'>{item.label}</span>
+                  <span className='sm:hidden'>{item.shortLabel}</span>
+                </UnderlineNav.Item>
+              ))}
             </UnderlineNav>
           </PageHeader.Navigation>
         </PageHeader>
 
         {/* Page Content */}
-        {renderPage()}
+        <main id="main-content" role="main" aria-label="Main page content">
+          {renderPage()}
+        </main>
 
       </div>
     </ErrorBoundary>

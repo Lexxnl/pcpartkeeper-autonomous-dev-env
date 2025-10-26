@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import PageHeader from '../index';
+import PageHeader from '../../PageHeader';
 
 describe('PageHeader Integration Tests', () => {
   it('renders basic page header', () => {

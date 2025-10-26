@@ -1,7 +1,5 @@
-import React, { useState, useCallback, memo } from 'react';
+import React, { useCallback, memo } from 'react';
 import { SearchIcon } from './icons';
-
-// NOTE: SearchBar styling and functionality are final. Do not modify unless necessary.
 
 /**
  * SearchBar - Search input component with button
@@ -16,17 +14,15 @@ import { SearchIcon } from './icons';
 
 // Type definitions
 interface SearchBarProps {
-  searchTerm?: string;
+  searchTerm: string; // Now required - component is fully controlled
   onSearchChange?: (value: string) => void;
   onSearch?: (value: string) => void;
 }
 
 const SearchBar = memo<SearchBarProps>(({ searchTerm, onSearchChange, onSearch }) => {
-  const [inputValue, setInputValue] = useState(searchTerm || '');
 
   const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    setInputValue(value);
     if (onSearchChange) {
       onSearchChange(value);
     }
@@ -34,9 +30,9 @@ const SearchBar = memo<SearchBarProps>(({ searchTerm, onSearchChange, onSearch }
 
   const handleSearch = useCallback(() => {
     if (onSearch) {
-      onSearch(inputValue);
+      onSearch(searchTerm);
     }
-  }, [onSearch, inputValue]);
+  }, [onSearch, searchTerm]);
 
   const handleKeyPress = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
@@ -55,7 +51,7 @@ const SearchBar = memo<SearchBarProps>(({ searchTerm, onSearchChange, onSearch }
       <input
         type='text'
         placeholder='Search items by name or category...'
-        value={inputValue}
+        value={searchTerm}
         onChange={handleInputChange}
         onKeyPress={handleKeyPress}
         className='flex-1 pl-4 pr-4 h-10 sm:h-9 border border-border-default rounded-l-lg rounded-r-none leading-5 bg-surface-page text-text-primary placeholder-text-placeholder focus:outline-none focus:placeholder-text-muted focus:ring-2 focus:ring-inset focus:ring-accent-primary focus:border-accent-primary text-sm sm:text-base transition-all duration-200'
@@ -74,7 +70,7 @@ const SearchBar = memo<SearchBarProps>(({ searchTerm, onSearchChange, onSearch }
         aria-label='Execute search'
         title='Search inventory items'
       >
-        <SearchIcon className='h-4 w-4 sm:h-3.5 sm:w-3.5 text-text-muted' aria-hidden='true' />
+        <SearchIcon className='h-5 w-5 sm:h-4 sm:w-4 text-text-muted' aria-hidden='true' />
       </button>
       
       {/* Screen reader help text */}

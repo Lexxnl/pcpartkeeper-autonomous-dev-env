@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { ArrowIcon } from './icons';
 import { cn } from '@/lib/utils';
 import { ChevronDownIcon } from './icons';
@@ -66,7 +66,7 @@ const LoadingSpinner = ({ className = 'h-4 w-4' }: LoadingSpinnerProps) => (
   </svg>
 );
 
-function Button({
+const Button = memo<ButtonProps>(({
   children,
   onClick,
   variant = 'primary',
@@ -81,7 +81,7 @@ function Button({
   type = 'button',
   'aria-label': ariaLabel,
   ...props
-}: ButtonProps) {
+}) => {
   const baseClasses =
     'inline-flex items-center justify-center font-medium rounded-md transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-page select-none';
 
@@ -173,7 +173,8 @@ function Button({
       {loading ? loadingContent : buttonContent}
     </button>
   );
-}
+});
 
+Button.displayName = 'Button';
 
 export default Button;

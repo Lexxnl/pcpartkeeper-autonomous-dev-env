@@ -30,7 +30,7 @@ interface StackProps {
   wrap?: boolean;
   as?: keyof JSX.IntrinsicElements;
   className?: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 function Stack({

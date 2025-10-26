@@ -82,7 +82,7 @@ const DataTableRowActions = React.forwardRef<
           action.disabled && 'opacity-50 cursor-not-allowed'
         )}
         title={action.label}
-        aria-label={action.label}
+        aria-label={`${item.name || 'Item'} - ${action.label}`}
       >
         <span className='flex items-center gap-1.5 sm:gap-2'>
           {action.icon && action.icon}

@@ -34,10 +34,10 @@ export const ItemsFilters: React.FC<ItemsFiltersProps> = React.memo(({
   brands,
   className = '',
 }) => {
-  const handleFilterChange = (key: keyof FilterOptions, value: any) => {
+  const handleFilterChange = (key: keyof FilterOptions, value: string | boolean | number | null | { min: string; max: string }) => {
     onFiltersChange({
       ...filters,
-      [key]: value,
+      [key]: value as never,
     });
   };
 

@@ -119,7 +119,6 @@ export default {
 
       // Enhanced breakpoints for better responsive design
       screens: {
-        xs: '475px', // Extra small devices
         sm: '640px', // Small devices (default Tailwind)
         md: '768px', // Medium devices (default Tailwind)
         lg: '1024px', // Large devices (default Tailwind)

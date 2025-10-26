@@ -1,5 +1,4 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
-import { useUIStore } from '../store';
 import { logger } from '../utils/logger';
 
 interface Props {
@@ -32,25 +31,11 @@ class ErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    // Log the error to console in development
-    if (process.env.NODE_ENV === 'development') {
-      logger.error('ErrorBoundary caught an error:', error, errorInfo);
-    }
-
-    // Add error notification to store
-    try {
-      const addNotification = useUIStore.getState().addNotification;
-      addNotification({
-        type: 'error',
-        title: 'Application Error',
-        message: 'Something went wrong. Please try refreshing the page.',
-        duration: 10000,
-      });
-    } catch (storeError) {
-      logger.error('Failed to add error notification:', storeError);
-    }
+    // Log the error in development
+    logger.error('ErrorBoundary caught an error:', error, errorInfo);
 
     // Call custom error handler if provided
+    // This allows parent components to handle errors properly without direct store access
     if (this.props.onError) {
       this.props.onError(error, errorInfo);
     }

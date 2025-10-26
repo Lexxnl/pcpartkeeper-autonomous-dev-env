@@ -18,27 +18,27 @@ import { VALIDATION_RULES, ERROR_MESSAGES } from '../constants';
 // TYPE GUARDS
 // ============================================================================
 
-function isArray(value: any): value is any[] {
+function isArray(value: unknown): value is unknown[] {
   return Array.isArray(value);
 }
 
-function isString(value: any): value is string {
+function isString(value: unknown): value is string {
   return typeof value === 'string';
 }
 
-function isNumber(value: any): value is number {
+function isNumber(value: unknown): value is number {
   return typeof value === 'number' && !isNaN(value);
 }
 
-function isBoolean(value: any): value is boolean {
+function isBoolean(value: unknown): value is boolean {
   return typeof value === 'boolean';
 }
 
-function isFunction(value: any): value is Function {
+function isFunction(value: unknown): value is Function {
   return typeof value === 'function';
 }
 
-function isObject(value: any): value is object {
+function isObject(value: unknown): value is object {
   return value !== null && typeof value === 'object' && !Array.isArray(value);
 }
 
@@ -46,7 +46,7 @@ function isObject(value: any): value is object {
 // DATA VALIDATION
 // ============================================================================
 
-function validateData(data: any): { isValid: boolean; error?: string } {
+function validateData(data: unknown): { isValid: boolean; error?: string } {
   if (!isArray(data)) {
     return { isValid: false, error: ERROR_MESSAGES.invalidData };
   }
@@ -61,7 +61,7 @@ function validateData(data: any): { isValid: boolean; error?: string } {
   return { isValid: true };
 }
 
-function validateColumns(columns: any): { isValid: boolean; error?: string } {
+function validateColumns(columns: unknown): { isValid: boolean; error?: string } {
   // Early return if columns is null or undefined
   if (columns === null || columns === undefined) {
     return { isValid: false, error: ERROR_MESSAGES.invalidColumns };
@@ -89,16 +89,17 @@ function validateColumns(columns: any): { isValid: boolean; error?: string } {
   return { isValid: true };
 }
 
-function validateColumn(column: any): { isValid: boolean; error?: string } {
+function validateColumn(column: unknown): { isValid: boolean; error?: string } {
   if (!isObject(column)) {
     return { isValid: false, error: 'Column must be an object' };
   }
 
-  if (!isString(column.key) || column.key.trim() === '') {
+  const col = column as Record<string, unknown>;
+  if (!isString(col.key) || col.key.trim() === '') {
     return { isValid: false, error: ERROR_MESSAGES.missingKey };
   }
 
-  if (!column.field && !column.render) {
+  if (!col.field && !col.render) {
     return { isValid: false, error: ERROR_MESSAGES.missingField };
   }
 
@@ -109,7 +110,7 @@ function validateColumn(column: any): { isValid: boolean; error?: string } {
 // PAGINATION VALIDATION
 // ============================================================================
 
-function validatePaginationConfig(config: any): {
+function validatePaginationConfig(config: unknown): {
   isValid: boolean;
   error?: string;
 } {
@@ -117,17 +118,18 @@ function validatePaginationConfig(config: any): {
     return { isValid: false, error: 'Pagination config must be an object' };
   }
 
-  if (isNumber(config.pageSize)) {
+  const cfg = config as Record<string, unknown>;
+  if (isNumber(cfg.pageSize)) {
     if (
-      config.pageSize < VALIDATION_RULES.minPageSize ||
-      config.pageSize > VALIDATION_RULES.maxPageSize
+      cfg.pageSize < VALIDATION_RULES.minPageSize ||
+      cfg.pageSize > VALIDATION_RULES.maxPageSize
     ) {
       return { isValid: false, error: ERROR_MESSAGES.invalidPageSize };
     }
   }
 
-  if (isNumber(config.currentPage)) {
-    if (config.currentPage < VALIDATION_RULES.minPage) {
+  if (isNumber(cfg.currentPage)) {
+    if (cfg.currentPage < VALIDATION_RULES.minPage) {
       return { isValid: false, error: ERROR_MESSAGES.invalidPage };
     }
   }
@@ -139,26 +141,26 @@ function validatePaginationConfig(config: any): {
 // ENUM VALIDATION
 // ============================================================================
 
-function validateSortDirection(direction: any): direction is SortDirection {
+function validateSortDirection(direction: unknown): direction is SortDirection {
   return isString(direction) && ['asc', 'desc', 'none'].includes(direction);
 }
 
-function validateAlignDirection(direction: any): direction is AlignDirection {
+function validateAlignDirection(direction: unknown): direction is AlignDirection {
   return isString(direction) && ['start', 'center', 'end'].includes(direction);
 }
 
-function validateSelectionMode(mode: any): mode is SelectionMode {
+function validateSelectionMode(mode: unknown): mode is SelectionMode {
   return isString(mode) && ['single', 'multiple', 'none'].includes(mode);
 }
 
-function validateCellPadding(padding: any): padding is CellPadding {
+function validateCellPadding(padding: unknown): padding is CellPadding {
   return (
     isString(padding) && ['condensed', 'normal', 'spacious'].includes(padding)
   );
 }
 
 function validateResponsiveBreakpoint(
-  breakpoint: any
+  breakpoint: unknown
 ): breakpoint is ResponsiveBreakpoint {
   return (
     isString(breakpoint) &&
@@ -457,7 +459,7 @@ function validateColumnProps<T>(column: Column<T>): {
 // ACCESSIBILITY VALIDATION
 // ============================================================================
 
-function validateAriaAttributes(props: Record<string, any>): {
+function validateAriaAttributes(props: Record<string, unknown>): {
   isValid: boolean;
   warnings: string[];
 } {

@@ -17,6 +17,7 @@ import {
   UserPreferences,
 } from '../store/types';
 import { logger } from '../utils/logger';
+import { generateMockItems } from '../data/mockData';
 
 // ============================================================================
 // CONFIGURATION
@@ -254,6 +255,10 @@ class ApiClient {
 
 const apiClient = new ApiClient();
 
+// Cache for mock data to avoid regenerating on every call
+let cachedMockItems: Item[] | null = null;
+let cacheTimestamp: number = 0;
+
 export const apiService = {
   // ========================================================================
   // ITEMS API
@@ -262,18 +267,52 @@ export const apiService = {
   items: {
     async getAll(filters?: any, signal?: AbortSignal): Promise<Item[]> {
       try {
-        // For now, return mock data
-        // In a real app, this would be: return apiClient.get<Item[]>('/items', { params: filters, signal });
         if (signal?.aborted) {
           throw new DOMException('Request aborted', 'AbortError');
         }
-        return generateMockItems();
+        
+        // Check cache first
+        const now = Date.now();
+        if (cachedMockItems && (now - cacheTimestamp) < CACHE_DURATION) {
+          return cachedMockItems;
+        }
+        
+        // Try to fetch from API with fallback to mock data
+        try {
+          // In a real app, this would be: 
+          // const response = await apiClient.get<Item[]>('/items', { params: filters, signal });
+          // return response;
+          
+          // For now, use mock data with simulated delay
+          await new Promise(resolve => setTimeout(resolve, 200));
+          const mockItems = generateMockItems();
+          
+          // Cache the results
+          cachedMockItems = mockItems;
+          cacheTimestamp = now;
+          
+          return mockItems;
+        } catch (apiError) {
+          // If API fails, fall back to mock data
+          logger.warn('API unavailable, using mock data:', apiError);
+          const mockItems = generateMockItems();
+          
+          // Cache the results
+          cachedMockItems = mockItems;
+          cacheTimestamp = now;
+          
+          return mockItems;
+        }
       } catch (error) {
         if (error.name === 'AbortError') {
           throw error;
         }
-        logger.error('Failed to fetch items:', error);
-        throw error;
+        logger.error('Failed to fetch items, using mock data as fallback:', error);
+        // Graceful degradation: return mock data even on error
+        const mockItems = generateMockItems();
+        cachedMockItems = mockItems;
+        cacheTimestamp = Date.now();
+        return mockItems;
       }
     },
 
@@ -503,53 +542,3 @@ export const apiService = {
   },
 };
 
-// ============================================================================
-// MOCK DATA GENERATION
-// ============================================================================
-
-const generateMockItems = (): Item[] => {
-  const categories = [
-    'CPU',
-    'GPU',
-    'RAM',
-    'Storage',
-    'Motherboard',
-    'PSU',
-    'Cooling',
-    'Case',
-    'Monitor',
-    'Keyboard',
-    'Mouse',
-  ];
-  const brands = [
-    'Intel',
-    'AMD',
-    'NVIDIA',
-    'Corsair',
-    'Samsung',
-    'ASUS',
-    'MSI',
-    'Gigabyte',
-    'EVGA',
-    'Cooler Master',
-    'Fractal Design',
-    'NZXT',
-    'Logitech',
-    'Razer',
-    'SteelSeries',
-  ];
-
-  return Array.from({ length: 50 }, (_, i) => ({
-    id: i + 1,
-    name: `${brands[i % brands.length]} ${categories[i % categories.length]} ${
-      i + 1
-    }`,
-    category: categories[i % categories.length],
-    brand: brands[i % brands.length],
-    price: Math.floor(Math.random() * 2000) + 50,
-    quantity: Math.floor(Math.random() * 10) + 1,
-    inStock: Math.random() > 0.2,
-    dateAdded: new Date(2024, 0, i + 1).toISOString().split('T')[0],
-    rating: Math.floor(Math.random() * 5) + 1,
-  }));
-};

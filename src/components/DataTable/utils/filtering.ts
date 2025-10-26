@@ -41,7 +41,7 @@ function filterData<T>(
 /**
  * Applies a single filter to a value
  */
-function applyFilter(value: any, filter: FilterConfig): boolean {
+function applyFilter(value: unknown, filter: FilterConfig): boolean {
   if (value === null || value === undefined) {
     return filter.operator === 'equals' && filter.value === null;
   }
@@ -85,7 +85,7 @@ function applyFilter(value: any, filter: FilterConfig): boolean {
 /**
  * Gets nested value from object using dot notation
  */
-function getNestedValue(obj: any, path: string | keyof any): any {
+function getNestedValue(obj: unknown, path: string | keyof unknown): unknown {
   if (typeof path === 'string' && path.includes('.')) {
     return path.split('.').reduce((current, key) => current?.[key], obj);
   }

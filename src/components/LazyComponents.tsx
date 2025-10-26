@@ -47,7 +47,7 @@ export const LazyUnderlineNavShowcase = lazy(
 export const LazyDataTable = lazy(() => import('./DataTable/DataTable'));
 
 // PageHeader Components (large and complex)
-export const LazyPageHeader = lazy(() => import('./PageHeader/PageHeader'));
+// export const LazyPageHeader = lazy(() => import('./PageHeader')); // Not currently used
 
 // Error Boundaries (loaded on demand)
 export const LazyDataTableErrorBoundary = lazy(() => import('./ErrorBoundaries/DataTableErrorBoundary'));

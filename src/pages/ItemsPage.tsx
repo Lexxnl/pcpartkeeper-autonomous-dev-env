@@ -1,12 +1,14 @@
-import React, { useMemo, useCallback, useEffect } from 'react';
+import React, { useMemo, useCallback, useEffect, useState } from 'react';
 import ItemsHeader from '../components/ItemsHeader';
 import { DataTable } from '../components/DataTable';
 import DataTableRowActions from '../components/DataTable/components/Actions/DataTableRowActions';
 import ItemsFilters from '../components/ItemsFilters';
 import EmptyState from '../components/EmptyState';
 import { PlusIcon } from '../components/icons';
+import { LoadingSpinner } from '../components/LoadingSpinner';
 import { useItemsStore, useUIStore } from '../store';
 import { useDebounce } from '../hooks/useDebounce';
+import { useItemColumns } from '../hooks/useItemColumns';
 import { MOCK_ITEMS, DEFAULT_FILTERS, ITEM_COLUMNS } from '../data/mockData';
 import { PageErrorBoundary, DataTableErrorBoundary, FormErrorBoundary } from '../components/ErrorBoundaries';
 import { Item } from '../store/types';
@@ -46,6 +48,10 @@ const ItemsPage: React.FC = React.memo(() => {
   const setShowFilters = useUIStore(state => state.setShowFilters);
   const setSelectedItems = useUIStore(state => state.setSelectedItems);
   const clearSelection = useUIStore(state => state.clearSelection);
+  
+  // Loading state for delete operations
+  const [deletingItemId, setDeletingItemId] = useState<number | null>(null);
+  const [bulkDeleting, setBulkDeleting] = useState(false);
 
   // ====================================================================
   // INITIALIZATION
@@ -106,20 +112,30 @@ const ItemsPage: React.FC = React.memo(() => {
   }, []);
 
   const handleDeleteItem = useCallback(async (item: Item): Promise<void> => {
+    setDeletingItemId(item.id);
     try {
       await deleteItem(item.id);
+      logger.log(`Item ${item.id} deleted successfully`);
     } catch (error) {
       logger.error('Error deleting item:', error);
+    } finally {
+      setDeletingItemId(null);
     }
   }, [deleteItem]);
 
   const handleBulkDelete = useCallback(async (): Promise<void> => {
+    setBulkDeleting(true);
     try {
-      if (selectedItems.length === 0) return;
+      if (selectedItems.length === 0) {
+        setBulkDeleting(false);
+        return;
+      }
       await deleteItems(selectedItems);
       clearSelection();
     } catch (error) {
       logger.error('Error bulk deleting items:', error);
+    } finally {
+      setBulkDeleting(false);
     }
   }, [selectedItems, deleteItems, clearSelection]);
 
@@ -128,7 +144,7 @@ const ItemsPage: React.FC = React.memo(() => {
 
   useEffect(() => {
     setFilters({ searchTerm: debouncedSearchTerm });
-  }, [debouncedSearchTerm, setFilters]);
+  }, [debouncedSearchTerm]); // setFilters is a stable Zustand action
 
   const handleSearch = useCallback((term: string): void => {
     setFilters({ searchTerm: term });
@@ -145,49 +161,12 @@ const ItemsPage: React.FC = React.memo(() => {
     setShowFilters(!showFilters);
   }, [showFilters, setShowFilters]);
 
-  // Memoized columns with actions - defined AFTER event handlers
-  const columnsWithActions = useMemo(() => {
-    return [
-      ...ITEM_COLUMNS,
-      {
-        key: 'actions',
-        header: 'Actions',
-        field: 'actions',
-        sortable: false,
-        width: 'auto',
-        align: 'center' as const,
-        render: (item: Item, index: number) => {
-          const actions = [
-            {
-              key: 'edit',
-              label: 'Edit',
-              icon: <span className='text-sm' aria-hidden='true'>✏️</span> as React.ReactNode,
-              onClick: () => handleEditItem(item),
-              variant: 'default' as const,
-            },
-            {
-              key: 'delete',
-              label: 'Delete',
-              icon: <span className='text-sm' aria-hidden='true'>🗑️</span> as React.ReactNode,
-              onClick: () => handleDeleteItem(item),
-              variant: 'danger' as const,
-            },
-          ];
-
-          return (
-            <DataTableRowActions
-              item={item}
-              index={index}
-              actions={actions}
-              variant='inline'
-              align='center'
-              className='flex flex-col sm:flex-row gap-component-sm sm:gap-component-md'
-            />
-          );
-        },
-      },
-    ];
-  }, [handleEditItem, handleDeleteItem]);
+  // Use extracted hook for columns with actions
+  const columnsWithActions = useItemColumns(
+    handleEditItem,
+    handleDeleteItem,
+    deletingItemId
+  );
 
   // ====================================================================
   // RENDER
@@ -224,6 +203,7 @@ const ItemsPage: React.FC = React.memo(() => {
               filteredCount={filteredItems.length}
               selectedCount={selectedItems.length}
               onBulkDelete={handleBulkDelete}
+              isBulkDeleting={bulkDeleting}
             />
           </section>
 

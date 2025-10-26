@@ -17,29 +17,8 @@ import { logger } from '../utils/logger';
 // MAIN STORE
 // ============================================================================
 
-// For now, we'll use individual stores instead of a combined store
-// This is simpler and more performant for this use case
-export const useAppStore = useItemsStore;
-
-// ============================================================================
-// STORE INITIALIZATION
-// ============================================================================
-
-/**
- * Initialize the store with default data
- * This should be called once when the app starts
- */
-export const initializeStore = async () => {
-  // Load initial data from API or localStorage
-  try {
-    // For now, we'll use mock data
-    // In a real app, this would fetch from an API
-    const mockItems = generateMockItems();
-    useItemsStore.getState().setItems(mockItems);
-  } catch (error) {
-    logger.error('Failed to initialize store:', error);
-  }
-};
+// Export individual stores for direct access
+export { useItemsStore, useUIStore, useUserStore };
 
 // ============================================================================
 // MOCK DATA GENERATION
@@ -75,10 +54,31 @@ export const setupStoreSubscriptions = () => {
   );
   unsubscribes.push(unsubscribeUserAuth);
 
+  // Create stable selector functions to prevent memory leaks
+  // These functions are created once and reused
+  const createErrorSelector = () => (state: ReturnType<typeof useUIStore.getState>) => {
+    return Object.entries(state.errors)
+      .filter(([, error]) => error !== null)
+      .map(([key]) => key)
+      .join(',');
+  };
+
+  const createLoadingSelector = () => (state: ReturnType<typeof useUIStore.getState>) => {
+    return Object.entries(state.loading)
+      .filter(([, isLoading]) => isLoading)
+      .map(([key]) => key)
+      .join(',');
+  };
+
   // Subscribe to error changes for notifications
+  const errorSelector = createErrorSelector();
   const unsubscribeErrors = useUIStore.subscribe(
-    state => state.errors,
-    errors => {
+    errorSelector,
+    (errorKeys) => {
+      // Only process if we have errors
+      if (!errorKeys) return;
+      
+      const errors = useUIStore.getState().errors;
       Object.entries(errors).forEach(([key, error]) => {
         if (error) {
           useUIStore.getState().addNotification({
@@ -94,10 +94,11 @@ export const setupStoreSubscriptions = () => {
   unsubscribes.push(unsubscribeErrors);
 
   // Subscribe to loading state changes
+  const loadingSelector = createLoadingSelector();
   const unsubscribeLoading = useUIStore.subscribe(
-    state => state.loading,
-    loading => {
-      const isLoading = Object.values(loading).some(loading => loading);
+    loadingSelector,
+    (loadingKeys) => {
+      const isLoading = loadingKeys && loadingKeys.length > 0;
       if (isLoading) {
         // Show global loading indicator
       } else {
@@ -116,9 +117,6 @@ export const setupStoreSubscriptions = () => {
 // ============================================================================
 // EXPORTS
 // ============================================================================
-
-// Export individual stores for direct access
-export { useItemsStore, useUIStore, useUserStore };
 
 // Export selectors
 export { itemsSelectors } from './slices/itemsSlice';

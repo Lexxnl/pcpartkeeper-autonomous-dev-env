@@ -129,9 +129,9 @@ const DataTable = memo<DataTableProps<any>>(
       getRowId,
     });
 
-    // Determine if virtualization should be used - TUNED: Lower threshold to 20 for earlier virtualization
+    // Determine if virtualization should be used - Optimized threshold for better performance
     const shouldVirtualize = useMemo(() => {
-      return virtualScrolling && sorting.sortedData.length > 20;
+      return virtualScrolling && sorting.sortedData.length > 50;
     }, [virtualScrolling, sorting.sortedData.length]);
 
     // Create container classes
@@ -180,7 +180,7 @@ const DataTable = memo<DataTableProps<any>>(
       responsive: true,
       stickyHeader,
       stickyColumns,
-      virtualized: shouldVirtualize ? { rowHeight, overscan: 5 } : undefined,
+      virtualized: shouldVirtualize ? { rowHeight, overscan: 10 } : undefined,
       getRowId: getRowId || ((item: any, index: number) => index),
       isSelected: selection.isSelected,
       isAllSelected: selection.isAllSelected,

@@ -15,34 +15,10 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
-          // Vendor chunks
+          // Vendor chunks - Let Vite auto-optimize feature chunks
           'react-vendor': ['react', 'react-dom'],
           'ui-vendor': ['clsx', 'tailwind-merge'],
-          'data-vendor': ['zustand'],
-          'utils-vendor': ['axios'],
-          
-          // Feature chunks
-          'datatable': [
-            './src/components/DataTable/DataTable.tsx',
-            './src/components/DataTableShowcase.tsx'
-          ],
-          'pageheader': [
-            './src/components/PageHeader/PageHeader.tsx',
-            './src/components/PageHeaderShowcase.tsx'
-          ],
-          'forms': [
-            './src/components/FormInput.tsx',
-            './src/components/ValidatedFormInput.tsx',
-            './src/components/ItemsFilters.tsx'
-          ],
-          'navigation': [
-            './src/components/UnderlineNav.tsx',
-            './src/components/UnderlineNavShowcase.tsx'
-          ],
-          'pages': [
-            './src/pages/ItemsPage.tsx',
-            './src/pages/TestingPage.tsx'
-          ]
+          'store-vendor': ['zustand'],
         },
         // Optimize chunk names
         chunkFileNames: (chunkInfo) => {
